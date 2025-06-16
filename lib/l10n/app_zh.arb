@@ -1,0 +1,38 @@
+{
+    "title": "绘创工坊",
+    "@title": {
+        "description": "软件名称"
+    },
+    "empty": "这里什么都没有",
+    "@empty": {
+        "description": "当没有书籍时显示的消息"
+    },
+    "back": "返回",
+    "@back": {
+        "description": "返回"
+    },
+    "manual": "手动播放",
+    "@manual": {
+        "description": "手动播放书籍"
+    },
+    "subtitle": "字幕",
+    "@subtitle": {
+        "description": "打开或关闭字幕"
+    },
+    "singlePlay": "单个播放",
+    "@singlePlay": {
+        "description": "单个播放"
+    },
+    "singleLoop": "单个循环",
+    "@singleLoop": {
+        "description": "单个循环播放"
+    },
+    "listPlay": "列表播放",
+    "@listPlay": {
+        "description": "列表播放"
+    },
+    "listLoop": "列表循环",
+    "@listLoop": {
+        "description": "循环播放列表"
+    }
+}

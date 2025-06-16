@@ -1,0 +1,38 @@
+{
+  "title": "Story Craft",
+  "@title": {
+    "description": "Title"
+  },
+  "empty": "There is nothing here.",
+  "@empty": {
+    "description": "Message displayed when there are no books"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back"
+  },
+  "manual": "Manual",
+  "@manual": {
+    "description": "Manualy play books"
+  },
+  "subtitle": "Subtitle",
+  "@subtitle": {
+    "description": "Show or hide subtitles."
+  },
+  "singlePlay": "Single",
+  "@singlePlay": {
+      "description": "Single"
+  },
+  "singleLoop": "Single Loop",
+  "@singleLoop": {
+      "description": "Single loop playback"
+  },
+  "listPlay": "List",
+  "@listPlay": {
+      "description": "List play"
+  },
+  "listLoop": "List Loop",
+  "@listLoop": {
+      "description": "List loop playback"
+  }
+}
