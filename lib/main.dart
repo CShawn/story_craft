@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'const.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     _loadBookShelf();
   }
 

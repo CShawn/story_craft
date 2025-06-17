@@ -34,4 +34,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listLoop => 'List Loop';
+
+  @override
+  String get animation => 'Animation';
 }

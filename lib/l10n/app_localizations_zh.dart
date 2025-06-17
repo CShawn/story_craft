@@ -34,4 +34,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get listLoop => '列表循环';
+
+  @override
+  String get animation => '动画';
 }

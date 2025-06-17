@@ -6,6 +6,7 @@ const String textFileName = "text.txt";
 const String keyBookDir = "book_dir";
 const String keyPlayMode = 'play_mode';
 const String keySubtitleSwitch = 'subtitle_switch';
+const String keyAnimation = 'animation';
 // 支持的图片类型
 const List<String> pictureTypes = [
   ".jpg",

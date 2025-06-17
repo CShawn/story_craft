@@ -34,5 +34,9 @@
     "listLoop": "列表循环",
     "@listLoop": {
         "description": "循环播放列表"
+    },
+    "animation": "动画",
+    "@animation": {
+        "description": "动画开关"
     }
 }

@@ -34,5 +34,9 @@
   "listLoop": "List Loop",
   "@listLoop": {
       "description": "List loop playback"
+  },
+  "animation": "Animation",
+  "@animation": {
+      "description": "Animation switch"
   }
 }

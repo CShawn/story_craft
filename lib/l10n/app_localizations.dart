@@ -151,6 +151,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List Loop'**
   String get listLoop;
+
+  /// Animation switch
+  ///
+  /// In en, this message translates to:
+  /// **'Animation'**
+  String get animation;
 }
 
 class _AppLocalizationsDelegate

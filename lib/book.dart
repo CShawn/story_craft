@@ -7,7 +7,6 @@ import 'const.dart';
 import 'package:just_audio/just_audio.dart';
 import 'dart:async';
 import 'utils/sp_util.dart';
-import 'package:flutter/services.dart';
 
 class BookPageView extends StatefulWidget {
   final String bookDir;
@@ -27,6 +26,7 @@ class _BookPageViewState extends State<BookPageView> {
   Timer? _delayedAudioTask;
   bool _drawerOpen = false;
   bool _subtitleSwitch = true; // 字幕开关
+  bool _animationSwitch = true; // 动画开关
   int _currentPage = 0;
   Timer? _autoPlayTimer;
   Timer? _drawerTimer;
@@ -57,15 +57,13 @@ class _BookPageViewState extends State<BookPageView> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    // _restoreState();
+    _restoreState();
     _playMode = widget.playMode;
     _loadPages();
   }
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _drawerTimer?.cancel();
     _delayedAudioTask?.cancel();
     _autoPlayTimer?.cancel();
@@ -90,6 +88,16 @@ class _BookPageViewState extends State<BookPageView> {
               onTap: () {
                 if (!_isPlaying) {
                   _playAudio(page.audioPath);
+                }
+              },
+              onHorizontalDragStart: _animationSwitch ? null : (details) {},
+              onHorizontalDragEnd: _animationSwitch ? null : (details) {
+                if (details.primaryVelocity! < 0) {
+                  // 向左滑动，下一页
+                  goToPage(index + 1);
+                } else if (details.primaryVelocity! > 0) {
+                  // 向右滑动，上一页
+                  goToPage(index - 1);
                 }
               },
               child: Stack(
@@ -171,7 +179,7 @@ class _BookPageViewState extends State<BookPageView> {
           ),
         // 顶部抽屉
         AnimatedPositioned(
-          duration: const Duration(milliseconds: 300),
+          duration: Duration(milliseconds: _animationSwitch ? 300 : 0),
           curve: Curves.ease,
           top: 0,
           left: 0,
@@ -180,7 +188,7 @@ class _BookPageViewState extends State<BookPageView> {
           child: Material(
             color: Colors.transparent,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: Duration(milliseconds: _animationSwitch ? 300 : 0),
               curve: Curves.ease,
               width: _drawerOpen ? 260 : 64,
               margin: EdgeInsets.symmetric(
@@ -222,6 +230,11 @@ class _BookPageViewState extends State<BookPageView> {
                           icon: _playModeIcon,
                           label: _playModeLabel,
                           onTap: _switchPlayMode,
+                        ),
+                        _DrawerItem(
+                          icon: _animationSwitch ? Icons.code : Icons.code_off ,
+                          label: AppLocalizations.of(context)!.animation,
+                          onTap: _toggleAnimation,
                         ),
                       ],
                     )
@@ -265,6 +278,9 @@ class _BookPageViewState extends State<BookPageView> {
     // 恢复字幕开关
     bool? subtitle = sp.getBool(keySubtitleSwitch);
     _subtitleSwitch = subtitle ?? true;
+    // 恢复动画效果开关
+    bool? animation = sp.getBool(keyAnimation);
+    _animationSwitch = animation ?? true;
   }
 
   // 加载页面数据
@@ -338,6 +354,15 @@ class _BookPageViewState extends State<BookPageView> {
       _subtitleSwitch = !_subtitleSwitch;
     });
     // sp.setBool(keySubtitleSwitch, _subtitleSwitch);
+    _delayCloseDrawer();
+  }
+
+  // 动画开关
+  void _toggleAnimation() {
+    setState(() {
+      _animationSwitch = !_animationSwitch;
+    });
+    sp.setBool(keyAnimation, _animationSwitch);
     _delayCloseDrawer();
   }
 
@@ -426,20 +451,12 @@ class _BookPageViewState extends State<BookPageView> {
         break;
       case PlayMode.single:
         if (!isLastPage) {
-          _pageController.animateToPage(
-            pageIndex + 1,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.ease,
-          );
+          goToPage(pageIndex + 1);
         }
         break;
       case PlayMode.singleLoop:
         if (!isLastPage) {
-          _pageController.animateToPage(
-            pageIndex + 1,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.ease,
-          );
+          goToPage(pageIndex + 1);
         } else {
           _pageController.jumpToPage(0);
         }
@@ -447,15 +464,24 @@ class _BookPageViewState extends State<BookPageView> {
       case PlayMode.list:
       case PlayMode.listLoop:
         if (!isLastPage) {
-          _pageController.animateToPage(
-            pageIndex + 1,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.ease,
-          );
+          goToPage(pageIndex + 1);
         } else {
           _autoPlayNextBook();
         }
         break;
+    }
+  }
+
+  void goToPage(int pageIndex) {
+    if (pageIndex < 0 || pageIndex >= _pages.length) return;
+    if (_animationSwitch) {
+      _pageController.animateToPage(
+        pageIndex,
+        duration: Duration(milliseconds: 400),
+        curve: Curves.ease,
+      );
+    } else {
+      _pageController.jumpToPage(pageIndex);
     }
   }
 
