@@ -102,8 +102,17 @@ class _BookPageViewState extends State<BookPageView> {
               },
               child: Stack(
                 children: [
-                  Center(
-                    child: Image.file(File(page.imagePath), fit: BoxFit.contain),
+                    Center(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                      return Image.file(
+                        File(page.imagePath),
+                        fit: BoxFit.contain,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                      );
+                      },
+                    ),
                   ),
                   if (page.text?.isNotEmpty == true && _subtitleSwitch)
                     Positioned(
