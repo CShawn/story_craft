@@ -87,9 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    bool isTablet = width > 600 && height > 600;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: isPortrait ? kToolbarHeight : 38,
+        toolbarHeight: isPortrait || isTablet ? kToolbarHeight : 38,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: _level == 0
         ? _isEditing ? IconButton(
@@ -119,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ] : [],
       ),
       body: Center(
-        child: _gridItems == null ? CircularProgressIndicator() : _gridItems!.isEmpty ? Text(AppLocalizations.of(context)!.empty) : _bookShelf()
+        child: _gridItems == null ? CircularProgressIndicator() : _gridItems!.isEmpty ? Text(AppLocalizations.of(context)!.empty) : _bookShelf(isPortrait, isTablet)
       ),
       floatingActionButton: Visibility(
         visible: _isEditing,
@@ -200,12 +203,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // 书架列表视图
-  Widget _bookShelf() {
+  Widget _bookShelf([bool isPortrait = true, bool isTablet = false]) {
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 150,
-        mainAxisSpacing: 16.0,
-        crossAxisSpacing: 16.0,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: !isTablet ? 120 : isPortrait ? 210 : 210,
+        mainAxisSpacing: 20.0,
+        crossAxisSpacing: 20.0,
         childAspectRatio: 0.8,
       ),
       itemCount: _gridItems!.length,
@@ -213,7 +216,8 @@ class _MyHomePageState extends State<MyHomePage> {
         final item = _gridItems![index];
         return GestureDetector(
           onTap: () => _clickBookItem(context, item, index),
-          child: GridTile(
+          child: Container(
+            padding: EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,11 +225,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Stack(
                   children: [
                     !item.bookDir.isBook ?
-                      Icon(Icons.folder, color: Theme.of(context).colorScheme.inversePrimary, size: 100) :
+                      Icon(Icons.folder, color: Theme.of(context).colorScheme.inversePrimary, size: isTablet ? 150 : 100) :
                       Image.file(
                         File(item.bookDir.icon),
-                        width: 80,
-                        height: 80,
+                        width: isTablet ? 150 : 90,
+                        height: isTablet ? 200 : 120,
                         fit: BoxFit.cover,
                       ),
                     if (_isEditing)
@@ -253,6 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   maxLines: 1,
                 ),
+                const SizedBox(height: 16.0),
               ],
             ),
           ),

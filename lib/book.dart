@@ -193,15 +193,15 @@ class _BookPageViewState extends State<BookPageView> {
           top: 0,
           left: 0,
           right: 0,
-          height: _drawerOpen ? 80 : 40,
+          height: _drawerOpen ? 80 : 60,
           child: Material(
             color: Colors.transparent,
             child: AnimatedContainer(
               duration: Duration(milliseconds: _animationSwitch ? 300 : 0),
               curve: Curves.ease,
-              width: _drawerOpen ? 260 : 64,
+              width: _drawerOpen ? 350 : 80,
               margin: EdgeInsets.symmetric(
-                horizontal: (MediaQuery.of(context).size.width - (_drawerOpen ? 260 : 64)) / 2,
+                horizontal: (MediaQuery.of(context).size.width - (_drawerOpen ? 350 : 80)) / 2,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface.withAlpha((0.4 * 255).toInt()),
@@ -263,7 +263,7 @@ class _BookPageViewState extends State<BookPageView> {
                       child: Center(
                         child: Icon(
                           Icons.keyboard_arrow_down,
-                          size: 28,
+                          size: 32,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
@@ -571,14 +571,20 @@ class _DrawerItem extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.primary)),
-          ],
+        child: Container(
+          // 增大点击区域
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          constraints: const BoxConstraints(minWidth: 72, minHeight: 72),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 32, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 6),
+              Text(label, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.primary)),
+            ],
+          ),
         ),
       ),
     );
