@@ -157,6 +157,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Animation'**
   String get animation;
+
+  /// Next book
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// Play again
+  ///
+  /// In en, this message translates to:
+  /// **'Replay'**
+  String get replay;
 }
 
 class _AppLocalizationsDelegate

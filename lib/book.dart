@@ -76,21 +76,74 @@ class _BookPageViewState extends State<BookPageView> {
     if (_pages.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    bool isTablet = width > 600 && height > 600;
     return Stack(
       children: [
         PageView.builder(
           controller: _pageController,
-          itemCount: _pages.length,
+          itemCount: _pageCount(),
           onPageChanged: _onPageChanged,
           itemBuilder: (context, index) {
+            final isLast = index >= _pages.length;
+            if (isLast) {
+              return Container(
+                alignment: Alignment.center,
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // 重播
+                        goToPage(0);
+                      },
+                      icon: Icon(Icons.replay, size: isTablet ? 32 : 16,),
+                      label: Text(AppLocalizations.of(context)!.replay, style: TextStyle(fontSize: isTablet ? 40 : 16),),
+                    ),
+                    SizedBox(width: isTablet ? 40 : 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        // 播放下一本书
+                        int currentBookIndex = widget.index;
+                        int nextBookIndex = currentBookIndex + 1;
+                        // 找下一个 isBook==true 的 BookDirItem
+                        while (nextBookIndex < widget.bookList!.length && !widget.bookList![nextBookIndex].bookDir.isBook) {
+                          nextBookIndex++;
+                        }
+                        if (nextBookIndex == widget.bookList!.length) {
+                          nextBookIndex = widget.bookList!.indexWhere((item) => item.bookDir.isBook);
+                        }
+                        // 跳到下一个书
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => BookPageView(
+                              bookDir: widget.bookList![nextBookIndex].bookDir.path,
+                              index: nextBookIndex,
+                              bookList: widget.bookList,
+                              playMode: _playMode,
+                            ),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.skip_next, size: isTablet ? 32 : 16,),
+                      label: Text(AppLocalizations.of(context)!.next, style: TextStyle(fontSize: isTablet ? 40 : 16),),
+                    ),
+                  ],
+                )
+              );
+            }
             final page = _pages[index];
             return GestureDetector(
               onTap: () {
-                if (!_isPlaying) {
-                  _playAudio(page.audioPath);
+                if (!_isPlaying && !isLast) {
+                  _playAudio(_pages[index].audioPath);
                 }
               },
-              onHorizontalDragStart: _animationSwitch ? null : (details) {},
+              onHorizontalDragStart: _animationSwitch ? null : (_) {},
               onHorizontalDragEnd: _animationSwitch ? null : (details) {
                 if (details.primaryVelocity! < 0) {
                   // 向左滑动，下一页
@@ -275,6 +328,10 @@ class _BookPageViewState extends State<BookPageView> {
     );
   }
 
+  int _pageCount() {
+    return _playMode == PlayMode.manual ? _pages.length + 1 : _pages.length;
+  }
+
   // 恢复之前的状态
   Future<void> _restoreState() async {
     // 恢复播放模式
@@ -418,6 +475,9 @@ class _BookPageViewState extends State<BookPageView> {
   }
 
   void _onPageChanged(int index) async {
+    if (index >= _pages.length) {
+      return;
+    }
     _autoPlayTimer?.cancel();
     _delayedAudioTask?.cancel();
     _currentPage = index;
@@ -436,7 +496,7 @@ class _BookPageViewState extends State<BookPageView> {
         await _playAudio(page.audioPath);
         // 自动模式下，音频播放完后延时1s切下一页
         if (_playMode != PlayMode.manual) {
-          _autoPlayTimer = Timer(const Duration(seconds: 1), () {
+          _autoPlayTimer = Timer(const Duration(seconds: 2), () {
             _handleAutoPlayNext(index);
           });
         }
@@ -482,7 +542,7 @@ class _BookPageViewState extends State<BookPageView> {
   }
 
   void goToPage(int pageIndex) {
-    if (pageIndex < 0 || pageIndex >= _pages.length) return;
+    if (pageIndex < 0 || pageIndex >= _pageCount()) return;
     if (_animationSwitch) {
       _pageController.animateToPage(
         pageIndex,

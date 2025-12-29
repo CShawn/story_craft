@@ -39,5 +39,13 @@
   "animation": "Animation",
   "@animation": {
       "description": "Animation switch"
+  },
+  "next": "Next",
+  "@next": {
+      "description": "Next book"
+  },
+  "replay": "Replay",
+  "@replay": {
+      "description": "Play again"
   }
 }

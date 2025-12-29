@@ -37,4 +37,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get animation => '动画';
+
+  @override
+  String get next => '下一个';
+
+  @override
+  String get replay => '再看一遍';
 }

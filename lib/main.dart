@@ -230,7 +230,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         File(item.bookDir.icon),
                         width: isTablet ? 150 : 90,
                         height: isTablet ? 200 : 120,
-                        fit: BoxFit.cover,
+                        fit: BoxFit.contain,
                       ),
                     if (_isEditing)
                       Positioned(

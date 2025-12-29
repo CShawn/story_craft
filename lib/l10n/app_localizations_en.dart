@@ -37,4 +37,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get animation => 'Animation';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get replay => 'Replay';
 }

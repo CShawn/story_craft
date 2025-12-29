@@ -39,5 +39,13 @@
     "animation": "动画",
     "@animation": {
         "description": "动画开关"
+    },
+    "next": "下一个",
+    "@next": {
+        "description": "下一本书"
+    },
+    "replay": "再看一遍",
+    "@replay": {
+        "description": "再看一遍这本书"
     }
 }
