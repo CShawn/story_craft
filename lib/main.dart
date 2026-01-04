@@ -109,7 +109,10 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: const Icon(Icons.arrow_back, color: Colors.white,),
             onPressed: _back,
           ),
-        title: Text(AppLocalizations.of(context)!.title, style: const TextStyle(color: Colors.white)),
+        title: Text(
+          _level == 0 ? AppLocalizations.of(context)!.title : path.basename(_currentPath),
+          style: const TextStyle(color: Colors.white)
+        ),
         actions: _level == 0 ? [
           if (_isEditing)
             IconButton(
@@ -206,9 +209,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _bookShelf([bool isPortrait = true, bool isTablet = false]) {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: !isTablet ? 120 : isPortrait ? 210 : 210,
-        mainAxisSpacing: 20.0,
-        crossAxisSpacing: 20.0,
+        maxCrossAxisExtent: !isTablet ? 120 : isPortrait ? 240 : 240,
+        mainAxisSpacing: 32.0,
+        crossAxisSpacing: 32.0,
         childAspectRatio: 0.8,
       ),
       itemCount: _gridItems!.length,
@@ -217,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return GestureDetector(
           onTap: () => _clickBookItem(context, item, index),
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -225,11 +228,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 Stack(
                   children: [
                     !item.bookDir.isBook ?
-                      Icon(Icons.folder, color: Theme.of(context).colorScheme.inversePrimary, size: isTablet ? 150 : 100) :
+                      Icon(Icons.folder, color: Theme.of(context).colorScheme.inversePrimary, size: isTablet ? 180 : 100) :
                       Image.file(
                         File(item.bookDir.icon),
-                        width: isTablet ? 150 : 90,
-                        height: isTablet ? 200 : 120,
+                        width: isTablet ? 180 : 90,
+                        height: isTablet ? 240 : 120,
                         fit: BoxFit.contain,
                       ),
                     if (_isEditing)
@@ -275,8 +278,17 @@ class _MyHomePageState extends State<MyHomePage> {
     if (item.bookDir.isBook) {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => BookPageView(bookDir: item.bookDir.path, index: index, bookList: _gridItems),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => BookPageView(
+            bookDir: item.bookDir.path, 
+            index: index, 
+            bookList: _gridItems
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return child;
+          },
+          transitionDuration: Duration.zero,
+          reverseTransitionDuration: Duration.zero,
         ),
       );
       return;

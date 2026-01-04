@@ -87,56 +87,6 @@ class _BookPageViewState extends State<BookPageView> {
           onPageChanged: _onPageChanged,
           itemBuilder: (context, index) {
             final isLast = index >= _pages.length;
-            if (isLast) {
-              return Container(
-                alignment: Alignment.center,
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // 重播
-                        goToPage(0);
-                      },
-                      icon: Icon(Icons.replay, size: isTablet ? 32 : 16,),
-                      label: Text(AppLocalizations.of(context)!.replay, style: TextStyle(fontSize: isTablet ? 40 : 16),),
-                    ),
-                    SizedBox(width: isTablet ? 40 : 20),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // 播放下一本书
-                        int currentBookIndex = widget.index;
-                        int nextBookIndex = currentBookIndex + 1;
-                        // 找下一个 isBook==true 的 BookDirItem
-                        while (nextBookIndex < widget.bookList!.length && !widget.bookList![nextBookIndex].bookDir.isBook) {
-                          nextBookIndex++;
-                        }
-                        if (nextBookIndex == widget.bookList!.length) {
-                          nextBookIndex = widget.bookList!.indexWhere((item) => item.bookDir.isBook);
-                        }
-                        // 跳到下一个书
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => BookPageView(
-                              bookDir: widget.bookList![nextBookIndex].bookDir.path,
-                              index: nextBookIndex,
-                              bookList: widget.bookList,
-                              playMode: _playMode,
-                            ),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.skip_next, size: isTablet ? 32 : 16,),
-                      label: Text(AppLocalizations.of(context)!.next, style: TextStyle(fontSize: isTablet ? 40 : 16),),
-                    ),
-                  ],
-                )
-              );
-            }
-            final page = _pages[index];
             return GestureDetector(
               onTap: () {
                 if (!_isPlaying && !isLast) {
@@ -155,19 +105,69 @@ class _BookPageViewState extends State<BookPageView> {
               },
               child: Stack(
                 children: [
-                    Center(
+                  Center(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                      return Image.file(
-                        File(page.imagePath),
-                        fit: BoxFit.contain,
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                      );
+                        if (isLast) {
+                          return Container(
+                            alignment: Alignment.center,
+                            color: Colors.white,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    // 重播
+                                    goToPage(0);
+                                  },
+                                  icon: Icon(Icons.replay, size: isTablet ? 32 : 16,),
+                                  label: Text(AppLocalizations.of(context)!.replay, style: TextStyle(fontSize: isTablet ? 40 : 16),),
+                                ),
+                                SizedBox(width: isTablet ? 40 : 20),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    // 播放下一本书
+                                    int currentBookIndex = widget.index;
+                                    int nextBookIndex = currentBookIndex + 1;
+                                    // 找下一个 isBook==true 的 BookDirItem
+                                    while (nextBookIndex < widget.bookList!.length && !widget.bookList![nextBookIndex].bookDir.isBook) {
+                                      nextBookIndex++;
+                                    }
+                                    if (nextBookIndex == widget.bookList!.length) {
+                                      nextBookIndex = widget.bookList!.indexWhere((item) => item.bookDir.isBook);
+                                    }
+                                    // 跳到下一个书
+                                    Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                        builder: (context) => BookPageView(
+                                          bookDir: widget.bookList![nextBookIndex].bookDir.path,
+                                          index: nextBookIndex,
+                                          bookList: widget.bookList,
+                                          playMode: _playMode,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.skip_next, size: isTablet ? 32 : 16,),
+                                  label: Text(AppLocalizations.of(context)!.next, style: TextStyle(fontSize: isTablet ? 40 : 16),),
+                                ),
+                              ],
+                            )
+                          );
+                        } else {
+                          return Image.file(
+                            File(_pages[index].imagePath),
+                            fit: BoxFit.contain,
+                            width: constraints.maxWidth,
+                            height: constraints.maxHeight,
+                          );
+                        }
                       },
                     ),
                   ),
-                  if (page.text?.isNotEmpty == true && _subtitleSwitch)
+                  if (!isLast && _pages[index].text?.isNotEmpty == true && _subtitleSwitch)
                     Positioned(
                       left: 0,
                       right: 0,
@@ -180,7 +180,7 @@ class _BookPageViewState extends State<BookPageView> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            page.text!,
+                            _pages[index].text!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 40,
@@ -226,7 +226,7 @@ class _BookPageViewState extends State<BookPageView> {
           },
         ),
         // 点击抽屉外区域收回
-        if (_drawerOpen)
+        if (_drawerOpen && _animationSwitch)
           Positioned.fill(
             child: GestureDetector(
               onTap: () {
@@ -347,6 +347,7 @@ class _BookPageViewState extends State<BookPageView> {
     // 恢复动画效果开关
     bool? animation = sp.getBool(keyAnimation);
     _animationSwitch = animation ?? true;
+    _drawerOpen = !_animationSwitch;
   }
 
   // 加载页面数据
@@ -603,6 +604,9 @@ class _BookPageViewState extends State<BookPageView> {
   // 延迟关闭抽屉
   _delayCloseDrawer() {
     _drawerTimer?.cancel();
+    if (!_animationSwitch) {
+      return;
+    }
     _drawerTimer = Timer(const Duration(seconds: 5), () {
       setState(() {
         _drawerOpen = false;
