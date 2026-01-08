@@ -329,7 +329,7 @@ class _BookPageViewState extends State<BookPageView> {
   }
 
   int _pageCount() {
-    return _playMode == PlayMode.manual ? _pages.length + 1 : _pages.length;
+    return _playMode == PlayMode.manual || _playMode == PlayMode.single ? _pages.length + 1 : _pages.length;
   }
 
   // 恢复之前的状态
@@ -514,7 +514,7 @@ class _BookPageViewState extends State<BookPageView> {
 
   void _handleAutoPlayNext(int pageIndex) {
     if (_playMode == PlayMode.manual) return;
-    final isLastPage = pageIndex >= _pages.length - 1;
+    final isLastPage = pageIndex >= _pageCount() - 1;
     if (!_pageController.hasClients) return;
     switch (_playMode) {
       case PlayMode.manual:
