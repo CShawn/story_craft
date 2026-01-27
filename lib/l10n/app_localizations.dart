@@ -169,6 +169,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Replay'**
   String get replay;
+
+  /// Likes books
+  ///
+  /// In en, this message translates to:
+  /// **'Likes'**
+  String get likes;
 }
 
 class _AppLocalizationsDelegate

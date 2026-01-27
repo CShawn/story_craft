@@ -43,4 +43,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get replay => '再看一遍';
+
+  @override
+  String get likes => '喜欢的书';
 }

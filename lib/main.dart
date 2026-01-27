@@ -198,6 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // 获取上一级目录路径
   String _getParentPath(String currentPath) {
+    if (currentPath == AppLocalizations.of(context)!.likes) {
+      return currentPath;
+    }
     List<String> parts = currentPath.split(path.separator);
     if (parts.length > 1) {
       currentPath = path.joinAll(parts.sublist(0, parts.length - 1));
@@ -207,6 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // 书架列表视图
   Widget _bookShelf([bool isPortrait = true, bool isTablet = false]) {
+    List<String> likes = _spUtil.getStringList(keyLikes) ?? [];
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: !isTablet ? 120 : isPortrait ? 240 : 240,
@@ -214,11 +218,44 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisSpacing: 32.0,
         childAspectRatio: 0.8,
       ),
-      itemCount: _gridItems!.length,
+      itemCount: _level == 0 ? _gridItems!.length + 1 : _gridItems!.length,
       itemBuilder: (context, index) {
+        if(index == 0 && _level == 0) {
+          return GestureDetector(
+            onTap: () => _showLikes(likes),
+            child: Container(
+              padding: EdgeInsets.all(32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(Icons.star, color: Theme.of(context).colorScheme.inversePrimary, size: isTablet ? 180 : 100),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    AppLocalizations.of(context)!.likes,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                  ),
+                  const SizedBox(height: 16.0),
+                ]
+              )
+            )
+          );
+        }
+        if (_level == 0) {
+          index -= 1;
+        }
         final item = _gridItems![index];
+        bool like = likes.contains(item.bookDir.path);
         return GestureDetector(
           onTap: () => _clickBookItem(context, item, index),
+          onLongPress: () {
+            _likeBook(item, likes);
+            setState(() {
+              like = !like;
+            });
+          },
           child: Container(
             padding: EdgeInsets.all(32.0),
             child: Column(
@@ -251,6 +288,23 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                       ),
+                    if (like)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Icon(
+                          Icons.star,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 50,
+                          shadows: [
+                            Shadow(
+                              color: Colors.white,
+                              blurRadius: 2,
+                              offset: Offset.zero,
+                            ),
+                          ],
+                        ),
+                      )
                   ],
                 ),
                 const SizedBox(height: 8.0),
@@ -304,6 +358,27 @@ class _MyHomePageState extends State<MyHomePage> {
       _level++;
       _currentPath = item.bookDir.path;
       _gridItems = dir;
+    });
+  }
+
+  _likeBook(BookDirItem item, List<String> likes) {
+    if (!item.bookDir.isBook) {
+      return;
+    }
+    if (likes.contains(item.bookDir.path)) {
+      likes.remove(item.bookDir.path);
+    } else {
+      likes.add(item.bookDir.path);
+    }
+    _spUtil.setStringList(keyLikes, likes);
+  }
+
+  _showLikes(List<String> likes) {
+    final books = likes.map((path) => BookDirItem(path)).toList();
+    setState(() {
+      _gridItems = books;
+      _level++;
+      _currentPath = AppLocalizations.of(context)!.likes;
     });
   }
 

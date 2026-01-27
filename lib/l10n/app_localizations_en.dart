@@ -43,4 +43,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get replay => 'Replay';
+
+  @override
+  String get likes => 'Likes';
 }

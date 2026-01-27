@@ -47,5 +47,6 @@
     "replay": "再看一遍",
     "@replay": {
         "description": "再看一遍这本书"
-    }
+    },
+    "likes": "喜欢的书"
 }

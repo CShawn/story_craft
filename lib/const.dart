@@ -7,6 +7,7 @@ const String keyBookDir = "book_dir";
 const String keyPlayMode = 'play_mode';
 const String keySubtitleSwitch = 'subtitle_switch';
 const String keyAnimation = 'animation';
+const String keyLikes = 'likes';
 // 支持的图片类型
 const List<String> pictureTypes = [
   ".jpg",

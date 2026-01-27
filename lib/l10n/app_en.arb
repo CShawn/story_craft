@@ -47,5 +47,9 @@
   "replay": "Replay",
   "@replay": {
       "description": "Play again"
+  },
+  "likes": "Likes",
+  "@likes": {
+      "description": "Likes books"
   }
 }
